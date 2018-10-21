@@ -14,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import io.digibyte.R;
 import io.digibyte.databinding.FragmentMenuBinding;
@@ -83,8 +84,41 @@ public class FragmentMenu extends Fragment implements OnBackPressListener {
         colorFade.start();
     }
 
+    private void fadeOutRemove(FragmentType fragmentType, boolean openLockScreen,
+                               boolean justClose) {
+        ObjectAnimator colorFade = BRAnimator.animateBackgroundDim(binding.background, true,
+                () -> {
+                    final AppCompatActivity activity = (AppCompatActivity) getActivity();
+                    remove();
+                    if (justClose) {
+                        return;
+                    }
+                    handler.postDelayed(() -> {
+                        if (openLockScreen) {
+                            BRAnimator.startBreadActivity(activity, true);
+                        } else {
+                            switch (fragmentType) {
+                                case SEND:
+                                    FragmentSend.show(activity, "");
+                                    break;
+                                case RECEIVE:
+                                    FragmentReceive.show(activity, true);
+                                    break;
+                                case SCAN:
+                                    BRAnimator.openScanner(getActivity());
+                                    break;
+                                case ADDRESS_BOOK:
+                                    Toast.makeText(activity, "Address Book clicked", Toast.LENGTH_SHORT).show();
+                                    break;
+                            }
+                        }
+                    }, 350);
+                });
+        colorFade.start();
+    }
+
     private enum FragmentType {
-        SEND, RECEIVE, SCAN
+        SEND, RECEIVE, SCAN, ADDRESS_BOOK
     }
 
     public class MenuListAdapter extends RecyclerView.Adapter<BRMenuItem> {
@@ -111,43 +145,19 @@ public class FragmentMenu extends Fragment implements OnBackPressListener {
                     holder.itemView.setOnClickListener(
                             v -> fadeOutRemove(FragmentType.RECEIVE, false, false));
                     break;
+                case 2:
+                    holder.text.setText(R.string.AddressBook_title);
+                    holder.icon.setImageResource(R.drawable.address_book);
+                    holder.itemView.setOnClickListener(
+                            v -> fadeOutRemove(FragmentType.ADDRESS_BOOK, false, false));
+                    break;
             }
         }
 
         @Override
         public int getItemCount() {
-            return 2;
+            return 3;
         }
-    }
-
-    private void fadeOutRemove(FragmentType fragmentType, boolean openLockScreen,
-            boolean justClose) {
-        ObjectAnimator colorFade = BRAnimator.animateBackgroundDim(binding.background, true,
-                () -> {
-                    final AppCompatActivity activity = (AppCompatActivity) getActivity();
-                    remove();
-                    if (justClose) {
-                        return;
-                    }
-                    handler.postDelayed(() -> {
-                        if (openLockScreen) {
-                            BRAnimator.startBreadActivity(activity, true);
-                        } else {
-                            switch (fragmentType) {
-                                case SEND:
-                                    FragmentSend.show(activity, "");
-                                    break;
-                                case RECEIVE:
-                                    FragmentReceive.show(activity, true);
-                                    break;
-                                case SCAN:
-                                    BRAnimator.openScanner(getActivity());
-                                    break;
-                            }
-                        }
-                    }, 350);
-                });
-        colorFade.start();
     }
 
     private void remove() {

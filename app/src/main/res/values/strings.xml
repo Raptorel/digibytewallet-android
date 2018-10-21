@@ -15,6 +15,8 @@
   <string name="About.twitter">https://twitter.com/digibytecoin</string>
   <!-- Close modal button accessibility label -->
   <string name="AccessibilityLabels.close">Close</string>
+  <!-- Address book modal title -->
+  <string name="AddressBook.title">Address Book</string>
   <!-- Third party keyboard warning -->
   <string name="Alert.customKeyboard.android">It looks like you are using a third-party keyboard, which can record what you type and steal your Personal Recovery Key. Please switch to the default Android keyboard for extra protection.</string>
   <!-- Error alert title -->
@@ -353,5 +355,8 @@
   <string name="max">max</string>
   <string name="current_amount">Current Value: %s</string>
   <string name="original_amount">Original Value: %s</string>
+
+  <!-- TODO: Remove or change this placeholder text -->
+  <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
