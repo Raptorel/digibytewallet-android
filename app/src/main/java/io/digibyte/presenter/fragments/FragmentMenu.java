@@ -14,10 +14,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import io.digibyte.R;
 import io.digibyte.databinding.FragmentMenuBinding;
+import io.digibyte.presenter.activities.AddressBookActivity;
 import io.digibyte.presenter.entities.BRMenuItem;
 import io.digibyte.presenter.fragments.interfaces.MenuDialogCallback;
 import io.digibyte.presenter.fragments.interfaces.OnBackPressListener;
@@ -108,7 +108,7 @@ public class FragmentMenu extends Fragment implements OnBackPressListener {
                                     BRAnimator.openScanner(getActivity());
                                     break;
                                 case ADDRESS_BOOK:
-                                    Toast.makeText(activity, "Address Book clicked", Toast.LENGTH_SHORT).show();
+                                    AddressBookActivity.show(activity);
                                     break;
                             }
                         }
