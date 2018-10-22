@@ -10,22 +10,33 @@ import io.digibyte.tools.database.AddressBookEntity;
 
 public class AddressBookSpinnerAdapter extends ArrayAdapter {
 
+    public static final String SPINNER_HEADER = "Add a new entry...";
+
     List<AddressBookEntity> addressBookEntities;
 
-    public AddressBookSpinnerAdapter(@NonNull Context context, int resource, @NonNull List<AddressBookEntity> entities) {
-        super(context, resource, entities);
-        addressBookEntities = entities;
+    public AddressBookSpinnerAdapter(@NonNull Context context, int resource) {
+        super(context, resource);
     }
 
     public void updateData(final List<AddressBookEntity> data) {
-        if (getCount() > 0) clear();
-        addAll(data);
-        notifyDataSetChanged();
         addressBookEntities = data;
+        //add the spinner header
+        addressBookEntities.add(0, addNewEntryPlaceholder());
+        //add the actual address book entries
+        addAll(addressBookEntities = data);
+        notifyDataSetChanged();
     }
 
     public List<AddressBookEntity> getAddressBookEntities() {
         return addressBookEntities;
+    }
+
+    private AddressBookEntity addNewEntryPlaceholder() {
+        AddressBookEntity entity = new AddressBookEntity();
+        entity.setName(SPINNER_HEADER);
+        entity.setAddress("");
+        entity.setFavorite(false);
+        return entity;
     }
 
 }
