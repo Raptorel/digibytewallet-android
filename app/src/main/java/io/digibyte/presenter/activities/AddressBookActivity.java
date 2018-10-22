@@ -72,13 +72,16 @@ public class AddressBookActivity extends BRActivity implements AdapterView.OnIte
             } else if (listResource.getState() == Resource.State.SUCCESS) {
                 hideDialog(mProgressBar);
                 List<AddressBookEntity> entities = listResource.getData();
+
                 if (addressBookSpinnerAdapter == null) {
                     //deal with the initialization of the spinner, adapter and on item selected listener
-                    addressBookSpinnerAdapter = new AddressBookSpinnerAdapter(this, android.R.layout.simple_spinner_item, entities);
+                    addressBookSpinnerAdapter = new AddressBookSpinnerAdapter(this, android.R.layout.simple_spinner_item);
                     addressBookSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     addressesSpinner.setAdapter(addressBookSpinnerAdapter);
                     addressesSpinner.setOnItemSelectedListener(this);
-                } else addressBookSpinnerAdapter.updateData(entities);
+                }
+                addressBookSpinnerAdapter.clear();
+                addressBookSpinnerAdapter.updateData(entities);
             }
         });
 
@@ -103,7 +106,10 @@ public class AddressBookActivity extends BRActivity implements AdapterView.OnIte
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         //get the selected address book entity
         AddressBookEntity entity = addressBookSpinnerAdapter.getAddressBookEntities().get(position);
-        nameEditText.setText(entity.getName());
+        //don't set the name if it's the header
+        if (!entity.getName().equals(AddressBookSpinnerAdapter.SPINNER_HEADER)) {
+            nameEditText.setText(entity.getName());
+        } else nameEditText.setText("");
         addressEditText.setText(entity.getAddress());
         favoriteSwitch.setChecked(entity.isFavorite());
     }
