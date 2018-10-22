@@ -17,6 +17,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import io.digibyte.R;
 import io.digibyte.presenter.activities.adapters.AddressBookSpinnerAdapter;
@@ -109,6 +110,28 @@ public class AddressBookActivity extends BRActivity implements AdapterView.OnIte
             }
         } else {
             //TODO Implement updating the entry, instead
+        }
+    }
+
+    @OnClick(R.id.btn_delete)
+    public void deleteEntryInAddressBook() {
+
+    }
+
+    @OnCheckedChanged(R.id.sw_editable)
+    public void toggleEditableEditTexts() {
+        if (editableSwitch.isChecked()) {
+            nameEditText.setEnabled(true);
+            addressEditText.setEnabled(true);
+            favoriteSwitch.setEnabled(true);
+            saveBtn.setEnabled(true);
+            deleteBtn.setEnabled(true);
+        } else {
+            nameEditText.setEnabled(false);
+            addressEditText.setEnabled(false);
+            favoriteSwitch.setEnabled(false);
+            saveBtn.setEnabled(false);
+            deleteBtn.setEnabled(false);
         }
     }
 
