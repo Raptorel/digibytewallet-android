@@ -25,4 +25,8 @@ public class AddressBookViewModel extends ViewModel {
     public void addNewAddressBookEntry(String name, String address, boolean isFavorite) {
         addressBookRepository.addNewAddressBookEntry(name, address, isFavorite);
     }
+
+    public void getAddressBookEntries() {
+        addressBookRepository.getAddressBookEntries();
+    }
 }

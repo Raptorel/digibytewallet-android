@@ -1,6 +1,8 @@
 package io.digibyte.presenter.repositories;
 
 import android.arch.lifecycle.MutableLiveData;
+import android.os.Handler;
+import android.os.Looper;
 
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -13,6 +15,7 @@ import io.digibyte.tools.database.Resource;
 public class AddressBookRepository {
     private final AddressBookDao addressBookDao;
     private Executor addressBookExecutor = Executors.newSingleThreadExecutor();
+    private Handler mainHandler = new Handler(Looper.getMainLooper());
 
     private MutableLiveData<Resource<List<AddressBookEntity>>> addressBookListLiveData;
     private MutableLiveData<Resource<AddressBookEntity>> addressBookEntryLiveData;
@@ -38,8 +41,12 @@ public class AddressBookRepository {
             addressBookEntity.setAddress(address);
             addressBookEntity.setFavorite(isFavorite);
 
+            //insert the newly created address book entry
             addressBookDao.insertAddressBookEntry(addressBookEntity);
-            addressBookListLiveData.setValue(Resource.success(addressBookDao.getAll()));
+            final List<AddressBookEntity> tempList = addressBookDao.getAll();
+
+            //use the main thread to update the live data value of the list of entries
+            mainHandler.post(() -> addressBookListLiveData.setValue(Resource.success(tempList)));
         });
     }
 
@@ -50,13 +57,34 @@ public class AddressBookRepository {
             addressBookEntity.setAddress(address);
             addressBookEntity.setFavorite(isFavorite);
 
+            //update the entry in the address book
             addressBookDao.updateAddressBookEntry(addressBookEntity);
+
+            final List<AddressBookEntity> tempList = addressBookDao.getAll();
+
+            //use the main thread to update the live data value of the list of entries
+            mainHandler.post(() -> addressBookListLiveData.setValue(Resource.success(tempList)));
         });
     }
 
     public void deleteAddressBookEntry(AddressBookEntity addressBookEntity) {
         addressBookExecutor.execute(() -> {
+            //delete the entry from the address book
             addressBookDao.deleteAddressBookEntry(addressBookEntity);
+
+            final List<AddressBookEntity> tempList = addressBookDao.getAll();
+
+            //use the main thread to update the live data value of the list of entries
+            mainHandler.post(() -> addressBookListLiveData.setValue(Resource.success(tempList)));
+        });
+    }
+
+    public void getAddressBookEntries() {
+        addressBookExecutor.execute(() -> {
+            final List<AddressBookEntity> tempList = addressBookDao.getAll();
+
+            //use the main thread to update the live data value of the list of entries
+            mainHandler.post(() -> addressBookListLiveData.setValue(Resource.success(tempList)));
         });
     }
 }
