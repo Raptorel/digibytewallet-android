@@ -15,6 +15,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.common.io.ByteStreams;
@@ -235,4 +237,17 @@ public abstract class BRActivity extends AppCompatActivity implements FragmentMa
     public void onCancel(AuthType type) {
 
     }
+
+    public void showDialog(ProgressBar mProgressBar) {
+
+        if (mProgressBar != null && !mProgressBar.isShown())
+            mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    public void hideDialog(ProgressBar mProgressBar) {
+
+        if (mProgressBar != null && mProgressBar.isShown())
+            mProgressBar.setVisibility(View.GONE);
+    }
+
 }

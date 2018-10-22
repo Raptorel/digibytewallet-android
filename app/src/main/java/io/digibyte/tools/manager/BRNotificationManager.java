@@ -1,6 +1,5 @@
 package io.digibyte.tools.manager;
 
-import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
@@ -66,7 +65,7 @@ public class BRNotificationManager {
         mBuilder.setContentIntent(resultPendingIntent);
         NotificationManager mNotificationManager =
                 (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
-        // mId allows you to update the notification later on.
+        // mId allows you to updateTransaction the notification later on.
         mNotificationManager.notify(mId, mBuilder.build());
     }
 }

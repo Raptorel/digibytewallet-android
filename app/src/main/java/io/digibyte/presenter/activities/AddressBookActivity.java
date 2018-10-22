@@ -1,17 +1,25 @@
 package io.digibyte.presenter.activities;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.digibyte.R;
+import io.digibyte.presenter.activities.adapters.AddressBookSpinnerAdapter;
+import io.digibyte.presenter.activities.models.AddressBookViewModel;
 import io.digibyte.presenter.activities.util.BRActivity;
+import io.digibyte.tools.database.AddressBookDao;
+import io.digibyte.tools.database.Database;
+import io.digibyte.tools.database.Resource;
 
 public class AddressBookActivity extends BRActivity {
 
@@ -27,6 +35,11 @@ public class AddressBookActivity extends BRActivity {
     EditText addressEditText;
     @BindView(R.id.spinner)
     Spinner addressesSpinner;
+    @BindView(R.id.progress_bar)
+    ProgressBar mProgressBar;
+
+    private AddressBookViewModel addressBookViewModel;
+    private AddressBookSpinnerAdapter addressBookSpinnerAdapter;
 
     public static void show(Context context) {
         context.startActivity(new Intent(context, AddressBookActivity.class));
@@ -37,7 +50,27 @@ public class AddressBookActivity extends BRActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_address_book);
         ButterKnife.bind(this);
+
         setupViews();
+
+        addressBookViewModel = ViewModelProviders.of(this).get(AddressBookViewModel.class);
+        AddressBookDao addressBookDao = Database.instance.addressBookDao;
+        addressBookViewModel.initRepository(addressBookDao);
+        addressBookViewModel.getCorrespondences().observe(this, listResource -> {
+            if (listResource.getState() == Resource.State.LOADING) {
+                showDialog(mProgressBar);
+            } else if (listResource.getState() == Resource.State.ERROR) {
+                hideDialog(mProgressBar);
+                Toast.makeText(getApplicationContext(), listResource.getMessage(), Toast.LENGTH_SHORT).show();
+            } else if (listResource.getState() == Resource.State.SUCCESS) {
+                hideDialog(mProgressBar);
+                if (addressBookSpinnerAdapter == null) {
+                    addressBookSpinnerAdapter = new AddressBookSpinnerAdapter(this, android.R.layout.simple_spinner_item, listResource.getData());
+                }
+                addressBookSpinnerAdapter.updateData(listResource.getData());
+            }
+        });
+
     }
 
     private void setupViews() {

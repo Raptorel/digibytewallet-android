@@ -114,7 +114,7 @@ public class AutoResizeTextView extends BRText {
     }
 
     /**
-     * Override the set text size to update our internal reference values
+     * Override the set text size to updateTransaction our internal reference values
      */
     @Override
     public void setTextSize(float size) {
@@ -123,7 +123,7 @@ public class AutoResizeTextView extends BRText {
     }
 
     /**
-     * Override the set text size to update our internal reference values
+     * Override the set text size to updateTransaction our internal reference values
      */
     @Override
     public void setTextSize(int unit, float size) {
@@ -132,7 +132,7 @@ public class AutoResizeTextView extends BRText {
     }
 
     /**
-     * Override the set line spacing to update our internal reference values
+     * Override the set line spacing to updateTransaction our internal reference values
      */
     @Override
     public void setLineSpacing(float add, float mult) {

@@ -43,7 +43,7 @@ public class BRSQLiteHelper extends SQLiteOpenHelper {
         return instance;
     }
 
-    private static final String DATABASE_NAME = "breadwallet.db";
+    private static final String DATABASE_NAME = "breadwallet.transactionDao";
     private static final int DATABASE_VERSION = 12;
 
     /**
@@ -119,15 +119,15 @@ public class BRSQLiteHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.e(TAG, "Upgrading database from version " + oldVersion + " to "
                 + newVersion + ", which will destroy all old data");
-//        db.execSQL("DROP TABLE IF EXISTS " + MB_TABLE_NAME);
-//        db.execSQL("DROP TABLE IF EXISTS " + TX_TABLE_NAME);
-//        db.execSQL("DROP TABLE IF EXISTS " + PEER_TABLE_NAME);
-//        db.execSQL("DROP TABLE IF EXISTS " + CURRENCY_TABLE_NAME);
-//        db.execSQL(MB_DATABASE_CREATE);
-//        db.execSQL(TX_DATABASE_CREATE);
-//        db.execSQL(PEER_DATABASE_CREATE);
-//        db.execSQL(CURRENCY_DATABASE_CREATE);
-//        db.execSQL("PRAGMA journal_mode=WAL;");
+//        transactionDao.execSQL("DROP TABLE IF EXISTS " + MB_TABLE_NAME);
+//        transactionDao.execSQL("DROP TABLE IF EXISTS " + TX_TABLE_NAME);
+//        transactionDao.execSQL("DROP TABLE IF EXISTS " + PEER_TABLE_NAME);
+//        transactionDao.execSQL("DROP TABLE IF EXISTS " + CURRENCY_TABLE_NAME);
+//        transactionDao.execSQL(MB_DATABASE_CREATE);
+//        transactionDao.execSQL(TX_DATABASE_CREATE);
+//        transactionDao.execSQL(PEER_DATABASE_CREATE);
+//        transactionDao.execSQL(CURRENCY_DATABASE_CREATE);
+//        transactionDao.execSQL("PRAGMA journal_mode=WAL;");
         onCreate(db);
 
     }

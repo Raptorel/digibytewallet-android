@@ -198,6 +198,7 @@ dependencies {
     implementation 'com.jakewharton:butterknife:8.8.1'
     def room_version = "1.1.0"
     implementation "android.arch.persistence.room:runtime:$room_version"
+    implementation 'android.arch.lifecycle:extensions:1.0.0-beta2'
     annotationProcessor "android.arch.persistence.room:compiler:$room_version"
     implementation 'com.facebook.conceal:conceal:2.0.2@aar'
     implementation 'com.tarun0.zxing-standalone:zxing-standalone:1.0.0'

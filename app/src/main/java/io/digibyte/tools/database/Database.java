@@ -14,21 +14,19 @@ import io.digibyte.DigiByte;
 
 public class Database {
     public static Database instance = new Database();
-    public TransactionDao db;
+    public TransactionDao transactionDao;
+    public AddressBookDao addressBookDao;
     private Executor transactionExecutor = Executors.newSingleThreadExecutor();
     private Handler handler = new Handler(Looper.getMainLooper());
     public List<DigiTransaction> transactions = new LinkedList<>();
-
-    public interface TransacionStoreListener {
-        void onTransactionsUpdate();
-    }
 
     public Database() {
         AppDatabase database = Room.databaseBuilder(DigiByte.getContext(),
                 AppDatabase.class, "transaction_database")
                 .fallbackToDestructiveMigration().build();
-        db = database.transactionDao();
-        update(null);
+        transactionDao = database.transactionDao();
+        addressBookDao = database.addressBookDao();
+        updateTransaction(null);
     }
 
     public void saveTransaction(byte[] txHash, String amount) {
@@ -36,20 +34,24 @@ public class Database {
             DigiTransaction digiTransaction = new DigiTransaction();
             digiTransaction.setTxHash(txHash);
             digiTransaction.setTxAmount(amount);
-            db.insertAll(digiTransaction);
-            transactions = db.getAll();
+            transactionDao.insertAll(digiTransaction);
+            transactions = transactionDao.getAll();
         });
     }
 
-    public void update(TransacionStoreListener transacionStoreListener) {
+    public void updateTransaction(TransactionStoreListener transactionStoreListener) {
         transactionExecutor.execute(() -> {
-            transactions = db.getAll();
+            transactions = transactionDao.getAll();
             handler.post(() -> {
-                if (transacionStoreListener != null) {
-                    transacionStoreListener.onTransactionsUpdate();
+                if (transactionStoreListener != null) {
+                    transactionStoreListener.onTransactionsUpdate();
                 }
             });
         });
+    }
+
+    public interface TransactionStoreListener {
+        void onTransactionsUpdate();
     }
 
     public boolean containsTransaction(byte[] txHash) {

@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import io.digibyte.R;
 import io.digibyte.presenter.activities.util.BRActivity;
-import io.digibyte.tools.animation.BRAnimator;
 import io.digibyte.tools.manager.BRSharedPrefs;
 import io.digibyte.tools.threads.BRExecutor;
 import io.digibyte.tools.util.TrustedNode;
@@ -39,7 +38,7 @@ public class NodesActivity extends BRActivity {
                 updateButtonText();
             } finally {
                 // 100% guarantee that this always happens, even if
-                // your update method throws an exception
+                // your updateTransaction method throws an exception
                 mHandler.postDelayed(mStatusChecker, mInterval);
             }
         }
