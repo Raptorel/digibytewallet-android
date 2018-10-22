@@ -23,6 +23,7 @@ public class Database {
     public Database() {
         AppDatabase database = Room.databaseBuilder(DigiByte.getContext(),
                 AppDatabase.class, "transaction_database")
+                .addMigrations(Migrations.MIGRATION_6_7)
                 .fallbackToDestructiveMigration().build();
         transactionDao = database.transactionDao();
         addressBookDao = database.addressBookDao();
