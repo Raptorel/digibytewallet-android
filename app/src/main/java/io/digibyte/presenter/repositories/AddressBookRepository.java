@@ -39,6 +39,7 @@ public class AddressBookRepository {
             addressBookEntity.setFavorite(isFavorite);
 
             addressBookDao.insertAddressBookEntry(addressBookEntity);
+            addressBookListLiveData.setValue(Resource.success(addressBookDao.getAll()));
         });
     }
 

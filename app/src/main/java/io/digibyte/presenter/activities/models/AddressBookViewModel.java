@@ -21,4 +21,8 @@ public class AddressBookViewModel extends ViewModel {
     public LiveData<Resource<List<AddressBookEntity>>> getCorrespondences() {
         return addressBookRepository.getAddressBookListLiveData();
     }
+
+    public void addNewAddressBookEntry(String name, String address, boolean isFavorite) {
+        addressBookRepository.addNewAddressBookEntry(name, address, isFavorite);
+    }
 }

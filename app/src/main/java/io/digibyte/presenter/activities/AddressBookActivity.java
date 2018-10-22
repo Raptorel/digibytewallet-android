@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.digibyte.R;
 import io.digibyte.presenter.activities.adapters.AddressBookSpinnerAdapter;
 import io.digibyte.presenter.activities.models.AddressBookViewModel;
@@ -76,5 +77,14 @@ public class AddressBookActivity extends BRActivity {
     private void setupViews() {
         setupToolbar();
         setToolbarTitle(R.string.AddressBook_title);
+    }
+
+    @OnClick(R.id.btn_save)
+    public void saveEntryInAddressBook() {
+        String name = nameEditText.getText().toString();
+        String address = addressEditText.getText().toString();
+        boolean isFavorite = favoriteSwitch.isChecked();
+
+        addressBookViewModel.addNewAddressBookEntry(name, address, isFavorite);
     }
 }
