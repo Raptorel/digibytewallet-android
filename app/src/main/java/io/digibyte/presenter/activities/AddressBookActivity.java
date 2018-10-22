@@ -31,6 +31,8 @@ public class AddressBookActivity extends BRActivity implements AdapterView.OnIte
 
     @BindView(R.id.btn_save)
     Button saveBtn;
+    @BindView(R.id.btn_delete)
+    Button deleteBtn;
     @BindView(R.id.sw_editable)
     Switch editableSwitch;
     @BindView(R.id.sw_favorite)
@@ -46,6 +48,7 @@ public class AddressBookActivity extends BRActivity implements AdapterView.OnIte
 
     private AddressBookViewModel addressBookViewModel;
     private AddressBookSpinnerAdapter addressBookSpinnerAdapter;
+    private boolean newEntry;
 
     public static void show(Context context) {
         context.startActivity(new Intent(context, AddressBookActivity.class));
@@ -96,10 +99,17 @@ public class AddressBookActivity extends BRActivity implements AdapterView.OnIte
     @OnClick(R.id.btn_save)
     public void saveEntryInAddressBook() {
         String name = nameEditText.getText().toString();
-        String address = addressEditText.getText().toString();
-        boolean isFavorite = favoriteSwitch.isChecked();
-
-        addressBookViewModel.addNewAddressBookEntry(name, address, isFavorite);
+        if (newEntry) {
+            if (!name.equals(AddressBookSpinnerAdapter.SPINNER_HEADER)) {
+                String address = addressEditText.getText().toString();
+                boolean isFavorite = favoriteSwitch.isChecked();
+                addressBookViewModel.addNewAddressBookEntry(name, address, isFavorite);
+            } else {
+                Toast.makeText(this, "You cannot add an entry with that name", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            //TODO Implement updating the entry, instead
+        }
     }
 
     @Override
@@ -109,7 +119,17 @@ public class AddressBookActivity extends BRActivity implements AdapterView.OnIte
         //don't set the name if it's the header
         if (!entity.getName().equals(AddressBookSpinnerAdapter.SPINNER_HEADER)) {
             nameEditText.setText(entity.getName());
-        } else nameEditText.setText("");
+            editableSwitch.setChecked(false);
+            editableSwitch.setEnabled(true);
+            deleteBtn.setVisibility(View.VISIBLE);
+            newEntry = true;
+        } else {
+            nameEditText.setText("");
+            editableSwitch.setChecked(true);
+            editableSwitch.setEnabled(false);
+            deleteBtn.setVisibility(View.GONE);
+            newEntry = false;
+        }
         addressEditText.setText(entity.getAddress());
         favoriteSwitch.setChecked(entity.isFavorite());
     }

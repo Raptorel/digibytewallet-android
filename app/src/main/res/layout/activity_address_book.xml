@@ -27,6 +27,8 @@
 
     <EditText
         android:id="@+id/et_name"
+        android:hint="Please type a name for this entry"
+        android:textColor="@color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@id/tv_name"
@@ -44,6 +46,8 @@
 
     <EditText
         android:id="@+id/et_address"
+        android:hint="Please enter the wallet address"
+        android:textColor="@color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@id/tv_address"
@@ -68,13 +72,29 @@
         android:text="Editable "
         android:textColor="@color/white" />
 
-    <Button
-        android:id="@+id/btn_save"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_below="@id/sw_editable"
-        android:layout_centerHorizontal="true"
-        android:text="Save" />
+        android:layout_centerHorizontal="true">
+
+        <Button
+            android:id="@+id/btn_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save" />
+
+        <Button
+            android:id="@+id/btn_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:text="Delete"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progress_bar"
