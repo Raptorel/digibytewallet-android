@@ -4,6 +4,8 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -25,7 +27,7 @@ import io.digibyte.tools.database.AddressBookEntity;
 import io.digibyte.tools.database.Database;
 import io.digibyte.tools.database.Resource;
 
-public class AddressBookActivity extends BRActivity {
+public class AddressBookActivity extends BRActivity implements AdapterView.OnItemSelectedListener {
 
     @BindView(R.id.btn_save)
     Button saveBtn;
@@ -71,9 +73,11 @@ public class AddressBookActivity extends BRActivity {
                 hideDialog(mProgressBar);
                 List<AddressBookEntity> entities = listResource.getData();
                 if (addressBookSpinnerAdapter == null) {
+                    //deal with the initialization of the spinner, adapter and on item selected listener
                     addressBookSpinnerAdapter = new AddressBookSpinnerAdapter(this, android.R.layout.simple_spinner_item, entities);
                     addressBookSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     addressesSpinner.setAdapter(addressBookSpinnerAdapter);
+                    addressesSpinner.setOnItemSelectedListener(this);
                 } else addressBookSpinnerAdapter.updateData(entities);
             }
         });
@@ -93,5 +97,19 @@ public class AddressBookActivity extends BRActivity {
         boolean isFavorite = favoriteSwitch.isChecked();
 
         addressBookViewModel.addNewAddressBookEntry(name, address, isFavorite);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        //get the selected address book entity
+        AddressBookEntity entity = addressBookSpinnerAdapter.getAddressBookEntities().get(position);
+        nameEditText.setText(entity.getName());
+        addressEditText.setText(entity.getAddress());
+        favoriteSwitch.setChecked(entity.isFavorite());
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }
