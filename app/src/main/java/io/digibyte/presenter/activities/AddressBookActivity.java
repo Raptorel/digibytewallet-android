@@ -126,7 +126,7 @@ public class AddressBookActivity extends BRActivity implements AdapterView.OnIte
 
     @OnClick(R.id.btn_delete)
     public void deleteEntryInAddressBook() {
-
+        addressBookViewModel.deleteSpecificAddressBookEntry(currentEntity);
     }
 
     @OnCheckedChanged(R.id.sw_editable)

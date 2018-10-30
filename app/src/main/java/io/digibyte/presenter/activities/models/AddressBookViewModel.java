@@ -33,4 +33,8 @@ public class AddressBookViewModel extends ViewModel {
     public void updateSpecificAddressBookEntry(AddressBookEntity addressBookEntity, String name, String address, boolean isFavorite){
         addressBookRepository.updateAddressBookEntry(addressBookEntity, name, address, isFavorite);
     }
+
+    public void deleteSpecificAddressBookEntry(AddressBookEntity entity) {
+        addressBookRepository.deleteAddressBookEntry(entity);
+    }
 }
