@@ -99,15 +99,25 @@ public class AddressBookActivity extends BRActivity implements AdapterView.OnIte
 
     @OnClick(R.id.btn_save)
     public void saveEntryInAddressBook() {
-        String name = nameEditText.getText().toString();
+        String name = nameEditText.getText().toString().trim();
+        String address = addressEditText.getText().toString().trim().toLowerCase();
+
+        //check for address validity
+        if (!address.startsWith("d") || !(address.length()==34)) {
+            Toast.makeText(this, "That is not a valid Digibyte address", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        //if it's a new entry, insert it
         if (newEntry) {
-            if (!name.equals(AddressBookSpinnerAdapter.SPINNER_HEADER)) {
-                String address = addressEditText.getText().toString();
+            //don't add an entry which contains the header of the spinner
+            if (!name.contains(AddressBookSpinnerAdapter.SPINNER_HEADER)) {
                 boolean isFavorite = favoriteSwitch.isChecked();
                 addressBookViewModel.addNewAddressBookEntry(name, address, isFavorite);
             } else {
                 Toast.makeText(this, "You cannot add an entry with that name", Toast.LENGTH_SHORT).show();
             }
+        //else, update the already existing entity
         } else {
             //TODO Implement updating the entry, instead
         }
@@ -145,13 +155,13 @@ public class AddressBookActivity extends BRActivity implements AdapterView.OnIte
             editableSwitch.setChecked(false);
             editableSwitch.setEnabled(true);
             deleteBtn.setVisibility(View.VISIBLE);
-            newEntry = true;
+            newEntry = false;
         } else {
             nameEditText.setText("");
             editableSwitch.setChecked(true);
             editableSwitch.setEnabled(false);
             deleteBtn.setVisibility(View.GONE);
-            newEntry = false;
+            newEntry = true;
         }
         addressEditText.setText(entity.getAddress());
         favoriteSwitch.setChecked(entity.isFavorite());
