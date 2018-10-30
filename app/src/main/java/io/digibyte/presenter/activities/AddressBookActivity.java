@@ -50,6 +50,7 @@ public class AddressBookActivity extends BRActivity implements AdapterView.OnIte
     private AddressBookViewModel addressBookViewModel;
     private AddressBookSpinnerAdapter addressBookSpinnerAdapter;
     private boolean newEntry;
+    private AddressBookEntity currentEntity;
 
     public static void show(Context context) {
         context.startActivity(new Intent(context, AddressBookActivity.class));
@@ -101,6 +102,7 @@ public class AddressBookActivity extends BRActivity implements AdapterView.OnIte
     public void saveEntryInAddressBook() {
         String name = nameEditText.getText().toString().trim();
         String address = addressEditText.getText().toString().trim().toLowerCase();
+        boolean isFavorite = favoriteSwitch.isChecked();
 
         //check for address validity
         if (!address.startsWith("d") || !(address.length()==34)) {
@@ -112,14 +114,13 @@ public class AddressBookActivity extends BRActivity implements AdapterView.OnIte
         if (newEntry) {
             //don't add an entry which contains the header of the spinner
             if (!name.contains(AddressBookSpinnerAdapter.SPINNER_HEADER)) {
-                boolean isFavorite = favoriteSwitch.isChecked();
                 addressBookViewModel.addNewAddressBookEntry(name, address, isFavorite);
             } else {
                 Toast.makeText(this, "You cannot add an entry with that name", Toast.LENGTH_SHORT).show();
             }
         //else, update the already existing entity
         } else {
-            //TODO Implement updating the entry, instead
+            addressBookViewModel.updateSpecificAddressBookEntry(currentEntity, name, address, isFavorite);
         }
     }
 
@@ -148,10 +149,10 @@ public class AddressBookActivity extends BRActivity implements AdapterView.OnIte
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         //get the selected address book entity
-        AddressBookEntity entity = addressBookSpinnerAdapter.getAddressBookEntities().get(position);
+        currentEntity = addressBookSpinnerAdapter.getAddressBookEntities().get(position);
         //don't set the name if it's the header
-        if (!entity.getName().equals(AddressBookSpinnerAdapter.SPINNER_HEADER)) {
-            nameEditText.setText(entity.getName());
+        if (!currentEntity.getName().equals(AddressBookSpinnerAdapter.SPINNER_HEADER)) {
+            nameEditText.setText(currentEntity.getName());
             editableSwitch.setChecked(false);
             editableSwitch.setEnabled(true);
             deleteBtn.setVisibility(View.VISIBLE);
@@ -163,8 +164,8 @@ public class AddressBookActivity extends BRActivity implements AdapterView.OnIte
             deleteBtn.setVisibility(View.GONE);
             newEntry = true;
         }
-        addressEditText.setText(entity.getAddress());
-        favoriteSwitch.setChecked(entity.isFavorite());
+        addressEditText.setText(currentEntity.getAddress());
+        favoriteSwitch.setChecked(currentEntity.isFavorite());
     }
 
     @Override
