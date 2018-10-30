@@ -18,23 +18,17 @@ public class AddressBookRepository {
     private Handler mainHandler = new Handler(Looper.getMainLooper());
 
     private MutableLiveData<Resource<List<AddressBookEntity>>> addressBookListLiveData;
-    private MutableLiveData<Resource<AddressBookEntity>> addressBookEntryLiveData;
 
     public AddressBookRepository(AddressBookDao addressBookDao) {
         this.addressBookDao = addressBookDao;
-        addressBookListLiveData = new MutableLiveData<Resource<List<AddressBookEntity>>>();
-        addressBookEntryLiveData = new MutableLiveData<Resource<AddressBookEntity>>();
+        addressBookListLiveData = new MutableLiveData<>();
     }
 
     public MutableLiveData<Resource<List<AddressBookEntity>>> getAddressBookListLiveData() {
         return addressBookListLiveData;
     }
 
-    public MutableLiveData<Resource<AddressBookEntity>> getAddressBookEntryLiveData() {
-        return addressBookEntryLiveData;
-    }
-
-    public void addNewAddressBookEntry(final String name, final String address, final boolean isFavorite) {
+    public void addNewAddressBookEntry(final String name, final String address, final boolean isFavorite, DatabaseOperationsListener databaseOperationsListener) {
         addressBookExecutor.execute(() -> {
             AddressBookEntity addressBookEntity = new AddressBookEntity();
             addressBookEntity.setName(name);
@@ -46,12 +40,15 @@ public class AddressBookRepository {
             final List<AddressBookEntity> tempList = addressBookDao.getAll();
 
             //use the main thread to update the live data value of the list of entries
-            mainHandler.post(() -> addressBookListLiveData.setValue(Resource.success(tempList)));
+            mainHandler.post(() -> {
+                addressBookListLiveData.setValue(Resource.success(tempList));
+                databaseOperationsListener.onInsertedAddressBookEntry();
+            });
         });
     }
 
     public void updateAddressBookEntry(final AddressBookEntity addressBookEntity, final String name,
-                                       final String address, final boolean isFavorite) {
+                                       final String address, final boolean isFavorite, DatabaseOperationsListener databaseOperationsListener) {
         addressBookExecutor.execute(() -> {
             addressBookEntity.setName(name);
             addressBookEntity.setAddress(address);
@@ -63,11 +60,14 @@ public class AddressBookRepository {
             final List<AddressBookEntity> tempList = addressBookDao.getAll();
 
             //use the main thread to update the live data value of the list of entries
-            mainHandler.post(() -> addressBookListLiveData.setValue(Resource.success(tempList)));
+            mainHandler.post(() -> {
+                addressBookListLiveData.setValue(Resource.success(tempList));
+                databaseOperationsListener.onUpdatedAddressBookEntry();
+            });
         });
     }
 
-    public void deleteAddressBookEntry(AddressBookEntity addressBookEntity) {
+    public void deleteAddressBookEntry(AddressBookEntity addressBookEntity, DatabaseOperationsListener databaseOperationsListener) {
         addressBookExecutor.execute(() -> {
             //delete the entry from the address book
             addressBookDao.deleteAddressBookEntry(addressBookEntity);
@@ -75,7 +75,10 @@ public class AddressBookRepository {
             final List<AddressBookEntity> tempList = addressBookDao.getAll();
 
             //use the main thread to update the live data value of the list of entries
-            mainHandler.post(() -> addressBookListLiveData.setValue(Resource.success(tempList)));
+            mainHandler.post(() -> {
+                addressBookListLiveData.setValue(Resource.success(tempList));
+                databaseOperationsListener.onDeletedAddressBookEntry();
+            });
         });
     }
 
@@ -86,5 +89,11 @@ public class AddressBookRepository {
             //use the main thread to update the live data value of the list of entries
             mainHandler.post(() -> addressBookListLiveData.setValue(Resource.success(tempList)));
         });
+    }
+
+    public interface DatabaseOperationsListener{
+        void onDeletedAddressBookEntry();
+        void onUpdatedAddressBookEntry();
+        void onInsertedAddressBookEntry();
     }
 }

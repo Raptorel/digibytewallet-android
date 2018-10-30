@@ -13,9 +13,11 @@ import io.digibyte.tools.database.Resource;
 public class AddressBookViewModel extends ViewModel {
 
     private AddressBookRepository addressBookRepository;
+    private AddressBookRepository.DatabaseOperationsListener databaseOperationsListener;
 
-    public void initRepository(final AddressBookDao addressBookDao) {
+    public void initRepository(final AddressBookDao addressBookDao, AddressBookRepository.DatabaseOperationsListener listener) {
         addressBookRepository = new AddressBookRepository(addressBookDao);
+        databaseOperationsListener = listener;
     }
 
     public LiveData<Resource<List<AddressBookEntity>>> getCorrespondences() {
@@ -23,7 +25,7 @@ public class AddressBookViewModel extends ViewModel {
     }
 
     public void addNewAddressBookEntry(String name, String address, boolean isFavorite) {
-        addressBookRepository.addNewAddressBookEntry(name, address, isFavorite);
+        addressBookRepository.addNewAddressBookEntry(name, address, isFavorite, databaseOperationsListener);
     }
 
     public void getAddressBookEntries() {
@@ -31,10 +33,10 @@ public class AddressBookViewModel extends ViewModel {
     }
 
     public void updateSpecificAddressBookEntry(AddressBookEntity addressBookEntity, String name, String address, boolean isFavorite){
-        addressBookRepository.updateAddressBookEntry(addressBookEntity, name, address, isFavorite);
+        addressBookRepository.updateAddressBookEntry(addressBookEntity, name, address, isFavorite, databaseOperationsListener);
     }
 
     public void deleteSpecificAddressBookEntry(AddressBookEntity entity) {
-        addressBookRepository.deleteAddressBookEntry(entity);
+        addressBookRepository.deleteAddressBookEntry(entity, databaseOperationsListener);
     }
 }

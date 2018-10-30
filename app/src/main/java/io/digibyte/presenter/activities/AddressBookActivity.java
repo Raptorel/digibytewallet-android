@@ -23,12 +23,15 @@ import io.digibyte.R;
 import io.digibyte.presenter.activities.adapters.AddressBookSpinnerAdapter;
 import io.digibyte.presenter.activities.models.AddressBookViewModel;
 import io.digibyte.presenter.activities.util.BRActivity;
+import io.digibyte.presenter.repositories.AddressBookRepository;
 import io.digibyte.tools.database.AddressBookDao;
 import io.digibyte.tools.database.AddressBookEntity;
 import io.digibyte.tools.database.Database;
 import io.digibyte.tools.database.Resource;
 
-public class AddressBookActivity extends BRActivity implements AdapterView.OnItemSelectedListener {
+public class AddressBookActivity extends BRActivity
+        implements AddressBookSpinnerAdapter.OnSpinnerDataChangedListener, AddressBookRepository.DatabaseOperationsListener,
+        AdapterView.OnItemSelectedListener {
 
     @BindView(R.id.btn_save)
     Button saveBtn;
@@ -51,6 +54,7 @@ public class AddressBookActivity extends BRActivity implements AdapterView.OnIte
     private AddressBookSpinnerAdapter addressBookSpinnerAdapter;
     private boolean newEntry;
     private AddressBookEntity currentEntity;
+    private static final String EMPTY_STRING = "";
 
     public static void show(Context context) {
         context.startActivity(new Intent(context, AddressBookActivity.class));
@@ -66,7 +70,7 @@ public class AddressBookActivity extends BRActivity implements AdapterView.OnIte
 
         addressBookViewModel = ViewModelProviders.of(this).get(AddressBookViewModel.class);
         AddressBookDao addressBookDao = Database.instance.addressBookDao;
-        addressBookViewModel.initRepository(addressBookDao);
+        addressBookViewModel.initRepository(addressBookDao, this);
 
         addressBookViewModel.getCorrespondences().observe(this, listResource -> {
             if (listResource.getState() == Resource.State.LOADING) {
@@ -150,26 +154,59 @@ public class AddressBookActivity extends BRActivity implements AdapterView.OnIte
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         //get the selected address book entity
         currentEntity = addressBookSpinnerAdapter.getAddressBookEntities().get(position);
+        populateFields();
+    }
+
+    private void populateFields() {
         //don't set the name if it's the header
         if (!currentEntity.getName().equals(AddressBookSpinnerAdapter.SPINNER_HEADER)) {
             nameEditText.setText(currentEntity.getName());
+            addressEditText.setText(currentEntity.getAddress());
             editableSwitch.setChecked(false);
             editableSwitch.setEnabled(true);
             deleteBtn.setVisibility(View.VISIBLE);
+            favoriteSwitch.setChecked(currentEntity.isFavorite());
             newEntry = false;
         } else {
-            nameEditText.setText("");
-            editableSwitch.setChecked(true);
-            editableSwitch.setEnabled(false);
-            deleteBtn.setVisibility(View.GONE);
-            newEntry = true;
+            clearFields();
         }
-        addressEditText.setText(currentEntity.getAddress());
-        favoriteSwitch.setChecked(currentEntity.isFavorite());
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    @Override
+    public void onDeletedAddressBookEntry() {
+        Toast.makeText(this, "Address successfully deleted!", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onUpdatedAddressBookEntry() {
+        Toast.makeText(this, "Address successfully updated!", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onInsertedAddressBookEntry() {
+        Toast.makeText(this, "Address successfully added!", Toast.LENGTH_SHORT).show();
+        clearFields();
+    }
+
+    private void clearFields(){
+        nameEditText.setText(EMPTY_STRING);
+        addressEditText.setText(EMPTY_STRING);
+        editableSwitch.setChecked(true);
+        editableSwitch.setEnabled(false);
+        deleteBtn.setVisibility(View.GONE);
+        favoriteSwitch.setChecked(false);
+        newEntry = true;
+    }
+
+    @Override
+    public void onSpinnerAdapterDataChanged() {
+        //get the selected address book entity
+        currentEntity = addressBookSpinnerAdapter.getAddressBookEntities().get(addressesSpinner.getSelectedItemPosition());
+        populateFields();
     }
 }

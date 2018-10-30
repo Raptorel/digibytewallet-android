@@ -38,4 +38,8 @@ public class AddressBookSpinnerAdapter extends ArrayAdapter {
         entity.setFavorite(false);
         return entity;
     }
+
+    public interface OnSpinnerDataChangedListener{
+        void onSpinnerAdapterDataChanged();
+    }
 }
