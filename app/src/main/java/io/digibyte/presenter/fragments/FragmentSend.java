@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -23,8 +24,10 @@ import android.widget.TextView;
 
 import java.math.BigDecimal;
 
+import butterknife.ButterKnife;
 import io.digibyte.R;
 import io.digibyte.databinding.FragmentSendBinding;
+import io.digibyte.presenter.activities.AddressBookActivity;
 import io.digibyte.presenter.activities.util.BRActivity;
 import io.digibyte.presenter.customviews.BRDialogView;
 import io.digibyte.presenter.entities.PaymentItem;
@@ -244,6 +247,15 @@ public class FragmentSend extends Fragment implements OnBackPressListener {
         }
     };
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == AddressBookActivity.USE_ADDRESS_FOR_SEND_OR_RECEIVE_CODE && resultCode == AddressBookActivity.RESULT_OK){
+            //get the passed address from the AddressBookActivity
+            String addressToUse = data.getStringExtra(AddressBookActivity.ADDRESS_EXTRA);
+            if (!TextUtils.isEmpty(addressToUse)) binding.addressEdit.setText(addressToUse);
+        }
+    }
+
     public static void show(AppCompatActivity app, String bitcoinUrl) {
         FragmentSend fragmentSend = new FragmentSend();
         if (bitcoinUrl != null && !bitcoinUrl.isEmpty()) {
@@ -263,6 +275,11 @@ public class FragmentSend extends Fragment implements OnBackPressListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         binding = FragmentSendBinding.inflate(inflater);
+        binding.browseAddressBook.setOnClickListener(v -> {
+            Intent intent = new Intent(this.getActivity(), AddressBookActivity.class);
+            intent.putExtra(AddressBookActivity.USE_ADDRESS_FOR_SEND_OR_RECEIVE_KEY, true);
+            startActivityForResult(intent, AddressBookActivity.USE_ADDRESS_FOR_SEND_OR_RECEIVE_CODE);
+        });
         binding.setCallback(fragmentSendCallbacks);
         binding.signalLayout.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGING);
         sendFragmentModel = savedInstanceState != null ? savedInstanceState.getParcelable(

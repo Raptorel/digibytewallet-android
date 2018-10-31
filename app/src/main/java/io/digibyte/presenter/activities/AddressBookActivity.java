@@ -37,6 +37,8 @@ public class AddressBookActivity extends BRActivity
     Button saveBtn;
     @BindView(R.id.btn_delete)
     Button deleteBtn;
+    @BindView(R.id.btn_use)
+    Button useBtn;
     @BindView(R.id.sw_editable)
     Switch editableSwitch;
     @BindView(R.id.sw_favorite)
@@ -55,6 +57,11 @@ public class AddressBookActivity extends BRActivity
     private boolean newEntry;
     private AddressBookEntity currentEntity;
     private static final String EMPTY_STRING = "";
+    public static final String USE_ADDRESS_FOR_SEND_OR_RECEIVE_KEY = "UseAddressForSendOrReceive";
+    public static final String ADDRESS_EXTRA = "AddressExtra";
+    public static final int USE_ADDRESS_FOR_SEND_OR_RECEIVE_CODE = 12345;
+    public static final int RESULT_OK = 99999;
+    private boolean fromSendOrReceive;
 
     public static void show(Context context) {
         context.startActivity(new Intent(context, AddressBookActivity.class));
@@ -65,6 +72,9 @@ public class AddressBookActivity extends BRActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_address_book);
         ButterKnife.bind(this);
+
+        //determine if this comes from the send or receive fragments and if so, display the "Use" button
+        fromSendOrReceive = getIntent().getBooleanExtra(USE_ADDRESS_FOR_SEND_OR_RECEIVE_KEY, false);
 
         setupViews();
 
@@ -105,14 +115,14 @@ public class AddressBookActivity extends BRActivity
     @OnClick(R.id.btn_save)
     public void saveEntryInAddressBook() {
         String name = nameEditText.getText().toString().trim();
-        String address = addressEditText.getText().toString().trim().toLowerCase();
+        String address = addressEditText.getText().toString().trim();
         boolean isFavorite = favoriteSwitch.isChecked();
 
-        //check for address validity
-        if (!address.startsWith("d") || !(address.length()==34)) {
-            Toast.makeText(this, "That is not a valid Digibyte address", Toast.LENGTH_SHORT).show();
-            return;
-        }
+//        //check for address validity
+//        if (!address.startsWith("d") || !(address.length()==34)) {
+//            Toast.makeText(this, "That is not a valid Digibyte address", Toast.LENGTH_SHORT).show();
+//            return;
+//        }
 
         //if it's a new entry, insert it
         if (newEntry) {
@@ -131,6 +141,16 @@ public class AddressBookActivity extends BRActivity
     @OnClick(R.id.btn_delete)
     public void deleteEntryInAddressBook() {
         addressBookViewModel.deleteSpecificAddressBookEntry(currentEntity);
+    }
+
+    @OnClick(R.id.btn_use)
+    public void useCurrentAddress() {
+        //get the address of the selected entity
+        String address = addressEditText.getText().toString();
+        Intent intent = new Intent();
+        intent.putExtra(ADDRESS_EXTRA, address);
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     @OnCheckedChanged(R.id.sw_editable)
@@ -167,6 +187,7 @@ public class AddressBookActivity extends BRActivity
             deleteBtn.setVisibility(View.VISIBLE);
             favoriteSwitch.setChecked(currentEntity.isFavorite());
             newEntry = false;
+            if(fromSendOrReceive) useBtn.setVisibility(View.VISIBLE); else useBtn.setVisibility(View.GONE);
         } else {
             clearFields();
         }
@@ -200,6 +221,7 @@ public class AddressBookActivity extends BRActivity
         editableSwitch.setEnabled(false);
         deleteBtn.setVisibility(View.GONE);
         favoriteSwitch.setChecked(false);
+        useBtn.setVisibility(View.GONE);
         newEntry = true;
     }
 

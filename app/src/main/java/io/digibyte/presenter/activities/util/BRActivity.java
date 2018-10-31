@@ -161,6 +161,9 @@ public abstract class BRActivity extends AppCompatActivity implements FragmentMa
 
                 }
                 break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
         }
     }
 
